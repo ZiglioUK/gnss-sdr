@@ -1960,6 +1960,7 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                 }
         }
     // ************ end time tags **************
+    std::cout << "" << std::endl;
 
     for (int32_t epoch = 0; epoch < noutput_items; epoch++)
         {
@@ -1974,12 +1975,14 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
 
             d_gnss_observables_map.clear();
             const auto** in = reinterpret_cast<const Gnss_Synchro**>(&input_items[0]);  // Get the input buffer pointer
+
             // ############ 1. READ PSEUDORANGES ####
             for (uint32_t i = 0; i < d_nchannels; i++)
                 {
+
                     if (in[i][epoch].Flag_valid_pseudorange)
                         {
-                            const auto tmp_eph_iter_gps = d_internal_pvt_solver->gps_ephemeris_map.find(in[i][epoch].PRN);
+                    	    const auto tmp_eph_iter_gps = d_internal_pvt_solver->gps_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_gal = d_internal_pvt_solver->galileo_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_cnav = d_internal_pvt_solver->gps_cnav_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_glo_gnav = d_internal_pvt_solver->glonass_gnav_ephemeris_map.find(in[i][epoch].PRN);
@@ -1987,14 +1990,24 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
 
                             bool store_valid_observable = false;
 
-                            if (tmp_eph_iter_gps != d_internal_pvt_solver->gps_ephemeris_map.cend())
+//                            if (tmp_eph_iter_gps != d_internal_pvt_solver->gps_ephemeris_map.cend())
                                 {
                                     const uint32_t prn_aux = tmp_eph_iter_gps->second.PRN;
+
                                     if ((prn_aux == in[i][epoch].PRN) && (std::string(in[i][epoch].Signal, 2) == std::string("1C")) && (d_use_unhealthy_sats || (tmp_eph_iter_gps->second.SV_health == 0)))
                                         {
+                                    		std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Valid\n";
                                             store_valid_observable = true;
                                         }
+                                    else
+										{
+											std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Health = "  << tmp_eph_iter_gps->second.SV_health << "\n";
+										}
                                 }
+//                            else {
+//                        		std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Invalid Map\n";
+//                            }
+
                             if (tmp_eph_iter_gal != d_internal_pvt_solver->galileo_ephemeris_map.cend())
                                 {
                                     const uint32_t prn_aux = tmp_eph_iter_gal->second.PRN;
@@ -2089,6 +2102,8 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                     else
                         {
                             d_channel_initialized.at(i) = false;  // the current channel is not reporting valid observable
+
+                    		std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Invalid\n";
                         }
                 }
 
@@ -2099,13 +2114,19 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                 }
 
             // ############ 2 COMPUTE THE PVT ################################
+
             bool flag_pvt_valid = false;
             if (d_gnss_observables_map.empty() == false)
                 {
-                    // LOG(INFO) << "diff raw obs time: " << d_gnss_observables_map.cbegin()->second.RX_time * 1000.0 - old_time_debug;
+            		std::cout << "COMPUTE PVT: obs size = " << d_gnss_observables_map.size() << "\n";
+                    //LOG(INFO) << "diff raw obs time: " << d_gnss_observables_map.cbegin()->second.RX_time * 1000.0 - old_time_debug;
+
                     // old_time_debug = d_gnss_observables_map.cbegin()->second.RX_time * 1000.0;
                     uint32_t current_RX_time_ms = 0;
+
                     // #### solve PVT and store the corrected observable set
+                    // std::cout << "get_PVT() =  " << d_internal_pvt_solver->get_PVT(d_gnss_observables_map, d_observable_interval_ms / 1000.0) << "\n";
+
                     if (d_internal_pvt_solver->get_PVT(d_gnss_observables_map, d_observable_interval_ms / 1000.0))
                         {
                             d_pvt_errors_counter = 0;  // Reset consecutive PVT error counter
@@ -2177,16 +2198,16 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                                     if (current_RX_time_ms % d_output_rate_ms == 0)
                                                         {
                                                             d_rx_time = static_cast<double>(current_RX_time_ms) / 1000.0;
-                                                            // std::cout << " obs time t0: " << d_gnss_observables_map_t0.cbegin()->second.RX_time
-                                                            //           << " t1: " << d_gnss_observables_map_t1.cbegin()->second.RX_time
-                                                            //           << " interp time: " << d_rx_time << '\n';
+                                                             std::cout << " obs time t0: " << d_gnss_observables_map_t0.cbegin()->second.RX_time
+                                                                       << " t1: " << d_gnss_observables_map_t1.cbegin()->second.RX_time
+                                                                       << " interp time: " << d_rx_time << '\n';
                                                             d_gnss_observables_map = interpolate_observables(d_gnss_observables_map_t0,
                                                                 d_gnss_observables_map_t1,
                                                                 d_rx_time);
                                                             flag_compute_pvt_output = true;
-                                                            // d_rx_time = current_RX_time;
-                                                            // std::cout.precision(17);
-                                                            // std::cout << "current_RX_time: " << current_RX_time << " map time: " << d_gnss_observables_map.begin()->second.RX_time << '\n';
+//                                                             d_rx_time = current_RX_time;
+//                                                             std::cout.precision(17);
+//                                                             std::cout << "current_RX_time: " << current_RX_time << " map time: " << d_gnss_observables_map.begin()->second.RX_time << '\n';
                                                         }
                                                 }
                                         }
@@ -2194,12 +2215,15 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                         {
                                             d_rx_time = d_gnss_observables_map.begin()->second.RX_time;
                                             current_RX_time_ms = static_cast<uint32_t>(d_rx_time * 1000.0);
+
                                             if (current_RX_time_ms % d_output_rate_ms == 0)
                                                 {
                                                     flag_compute_pvt_output = true;
-                                                    // std::cout.precision(17);
-                                                    // std::cout << "current_RX_time: " << current_RX_time_ms << " map time: " << d_gnss_observables_map.begin()->second.RX_time << '\n';
+
+                                                    std::cout.precision(17);
+                                                    std::cout << "current_RX_time: " << current_RX_time_ms << " map time: " << d_gnss_observables_map.begin()->second.RX_time << '\n';
                                                 }
+
                                             flag_pvt_valid = true;
                                         }
                                 }
@@ -2215,6 +2239,7 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                     LOG(INFO) << "PVT: Number of consecutive position solver error reached, Sent reset to observables.";
                                     d_pvt_errors_counter = 0;
                                 }
+                            //exit(1);
                         }
 
                     // compute on the fly PVT solution
@@ -2304,6 +2329,8 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                             if (current_RX_time_ms % static_cast<uint32_t>(d_rinexobs_rate_ms) == 0)
                                                 {
                                                     flag_write_RINEX_obs_output = true;
+
+                                                    std::cout << "flag_write_RINEX_obs_output = true" << std::endl;
                                                 }
                                         }
 

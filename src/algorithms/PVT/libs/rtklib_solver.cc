@@ -1397,6 +1397,8 @@ bool Rtklib_Solver::get_PVT(const std::map<int, Gnss_Synchro> &gnss_observables_
     // ****** SOLVE PVT******************************************************
     // **********************************************************************
 
+    std::cout << "valid_obs = " << valid_obs << "\n";
+
     this->set_valid_position(false);
     if ((valid_obs + glo_valid_obs) > 3)
         {
