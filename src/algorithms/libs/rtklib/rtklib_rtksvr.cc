@@ -70,7 +70,7 @@ void writesol(rtksvr_t *svr, int index)
     int i;
     int n;
 
-    tracet(4, "writesol: index=%d\n", index);
+    printf( "writesol: index=%d\n", index);
 
     for (i = 0; i < 2; i++)
         {
@@ -178,7 +178,7 @@ void updatesvr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav, int sat,
     int sys;
     int iode;
 
-    tracet(4, "updatesvr: ret=%d sat=%2d index=%d\n", ret, sat, index);
+    printf( "updatesvr: ret=%d sat=%2d index=%d\n", ret, sat, index);
 
     if (ret == 1)
         { /* observation data */
@@ -382,7 +382,7 @@ int decoderaw(rtksvr_t *svr, int index)
     int sat;
     int fobs = 0;
 
-    tracet(4, "decoderaw: index=%d\n", index);
+    printf( "decoderaw: index=%d\n", index);
 
     rtksvrlock(svr);
 
@@ -453,7 +453,7 @@ void decodefile(rtksvr_t *svr, int index)
     char file[1024];
     int nb;
 
-    tracet(4, "decodefile: index=%d\n", index);
+    printf( "decodefile: index=%d\n", index);
 
     rtksvrlock(svr);
 
@@ -476,7 +476,7 @@ void decodefile(rtksvr_t *svr, int index)
             readsp3(file, &nav, 0);
             if (nav.ne <= 0)
                 {
-                    tracet(1, "sp3 file read error: %s\n", file);
+                    printf( "sp3 file read error: %s\n", file);
                     return;
                 }
             /* update precise ephemeris */
@@ -499,7 +499,7 @@ void decodefile(rtksvr_t *svr, int index)
             /* read rinex clock */  // Disabled!!
             if (true /*readrnxc(file, &nav)<=0 */)
                 {
-                    tracet(1, "rinex clock file read error: %s\n", file);
+                    printf( "rinex clock file read error: %s\n", file);
                     return;
                 }
             /* update precise clock */
@@ -537,7 +537,7 @@ void *rtksvrthread(void *arg)
     int cycle;
     int cputime;
 
-    tracet(3, "rtksvrthread:\n");
+    printf( "rtksvrthread:\n");
 
     svr->state = 1;
     obs.data = data;
@@ -688,7 +688,7 @@ int rtksvrinit(rtksvr_t *svr)
     int i;
     int j;
 
-    tracet(3, "rtksvrinit:\n");
+    printf( "rtksvrinit:\n");
 
     svr->state = svr->cycle = svr->nmeacycle = svr->nmeareq = 0;
     for (i = 0; i < 3; i++)
@@ -705,6 +705,9 @@ int rtksvrinit(rtksvr_t *svr)
             svr->solopt[i] = SOLOPT_DEFAULT;
         }
     svr->navsel = svr->nsbs = svr->nsol = 0;
+
+    printf("rtkinit(&svr->rtk, &PRCOPT_DEFAULT), elmin = %f\n", PRCOPT_DEFAULT.elmin);
+
     rtkinit(&svr->rtk, &PRCOPT_DEFAULT);
     for (i = 0; i < 3; i++)
         {
@@ -758,7 +761,7 @@ int rtksvrinit(rtksvr_t *svr)
         !(svr->nav.geph = static_cast<geph_t *>(malloc(sizeof(geph_t) * NSATGLO * 2))) ||
         !(svr->nav.seph = static_cast<seph_t *>(malloc(sizeof(seph_t) * NSATSBS * 2))))
         {
-            tracet(1, "rtksvrinit: malloc error\n");
+            printf( "rtksvrinit: malloc error\n");
             return 0;
         }
     for (i = 0; i < MAXSAT * 2; i++)
@@ -783,7 +786,7 @@ int rtksvrinit(rtksvr_t *svr)
                 {
                     if (!(svr->obs[i][j].data = static_cast<obsd_t *>(malloc(sizeof(obsd_t) * MAXOBS))))
                         {
-                            tracet(1, "rtksvrinit: malloc error\n");
+                            printf( "rtksvrinit: malloc error\n");
                             return 0;
                         }
                 }
@@ -889,7 +892,7 @@ int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
     int j;
     int rw;
 
-    tracet(3, "rtksvrstart: cycle=%d buffsize=%d navsel=%d nmeacycle=%d nmeareq=%d\n",
+    printf( "rtksvrstart: cycle=%d buffsize=%d navsel=%d nmeacycle=%d nmeareq=%d\n",
         cycle, buffsize, navsel, nmeacycle, nmeareq);
 
     if (svr->state)
@@ -915,6 +918,8 @@ int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
     svr->nsol = 0;
     svr->prcout = 0;
     rtkfree(&svr->rtk);
+
+    printf("rtkinit(&svr->rtk, prcopt);\n");
     rtkinit(&svr->rtk, prcopt);
 
     for (i = 0; i < 3; i++)
@@ -923,7 +928,7 @@ int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
             if (!(svr->buff[i] = static_cast<unsigned char *>(malloc(buffsize))) ||
                 !(svr->pbuf[i] = static_cast<unsigned char *>(malloc(buffsize))))
                 {
-                    tracet(1, "rtksvrstart: malloc error\n");
+                    printf( "rtksvrstart: malloc error\n");
                     return 0;
                 }
             for (j = 0; j < 10; j++)
@@ -958,7 +963,7 @@ int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
         { /* output peek buffer */
             if (!(svr->sbuf[i] = static_cast<unsigned char *>(malloc(buffsize))))
                 {
-                    tracet(1, "rtksvrstart: malloc error\n");
+                    printf( "rtksvrstart: malloc error\n");
                     return 0;
                 }
         }
@@ -1057,7 +1062,7 @@ void rtksvrstop(rtksvr_t *svr, char **cmds)
 {
     int i;
 
-    tracet(3, "rtksvrstop:\n");
+    printf( "rtksvrstop:\n");
 
     /* write stop commands to input streams */
     rtksvrlock(svr);
@@ -1092,7 +1097,7 @@ void rtksvrstop(rtksvr_t *svr, char **cmds)
 int rtksvropenstr(rtksvr_t *svr, int index, int str, const char *path,
     const solopt_t *solopt)
 {
-    tracet(3, "rtksvropenstr: index=%d str=%d path=%s\n", index, str, path);
+    printf( "rtksvropenstr: index=%d str=%d path=%s\n", index, str, path);
 
     if (index < 3 || index > 7 || !svr->state)
         {
@@ -1108,7 +1113,7 @@ int rtksvropenstr(rtksvr_t *svr, int index, int str, const char *path,
         }
     if (!stropen(svr->stream + index, str, STR_MODE_W, path))
         {
-            tracet(2, "stream open error: index=%d\n", index);
+            printf( "stream open error: index=%d\n", index);
             rtksvrunlock(svr);
             return 0;
         }
@@ -1134,7 +1139,7 @@ int rtksvropenstr(rtksvr_t *svr, int index, int str, const char *path,
  *-----------------------------------------------------------------------------*/
 void rtksvrclosestr(rtksvr_t *svr, int index)
 {
-    tracet(3, "rtksvrclosestr: index=%d\n", index);
+    printf( "rtksvrclosestr: index=%d\n", index);
 
     if (index < 3 || index > 7 || !svr->state)
         {
@@ -1169,7 +1174,7 @@ int rtksvrostat(rtksvr_t *svr, int rcv, gtime_t *time, int *sat,
     int j;
     int ns;
 
-    tracet(4, "rtksvrostat: rcv=%d\n", rcv);
+    printf( "rtksvrostat: rcv=%d\n", rcv);
 
     if (!svr->state)
         {
@@ -1217,7 +1222,7 @@ void rtksvrsstat(rtksvr_t *svr, int *sstat, char *msg)
     char s[MAXSTRMSG];
     char *p = msg;
 
-    tracet(4, "rtksvrsstat:\n");
+    printf( "rtksvrsstat:\n");
 
     rtksvrlock(svr);
     for (i = 0; i < MAXSTRRTK; i++)

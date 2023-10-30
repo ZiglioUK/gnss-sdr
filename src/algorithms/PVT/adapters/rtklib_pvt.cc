@@ -540,12 +540,12 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         }
 
     double elevation_mask = configuration->property(role + ".elevation_mask", 15.0);
-    if ((elevation_mask < 0.0) || (elevation_mask > 90.0))
-        {
-            // warn user and set the default
-            LOG(WARNING) << "Erroneous Elevation Mask. Setting to default value of 15.0 degrees";
-            elevation_mask = 15.0;
-        }
+//    if ((elevation_mask < 0.0) || (elevation_mask > 90.0))
+//        {
+//            // warn user and set the default
+//            LOG(WARNING) << "Erroneous Elevation Mask. Setting to default value of 15.0 degrees";
+//            elevation_mask = 15.0;
+//        }
 
     int dynamics_model = configuration->property(role + ".dynamics_model", 0); /*  dynamics model (0:none, 1:velocity, 2:accel) */
     if ((dynamics_model < 0) || (dynamics_model > 2))
@@ -835,6 +835,7 @@ Rtklib_Pvt::Rtklib_Pvt(const ConfigurationInterface* configuration,
         bancroft_init                                                                      /* enable Bancroft initialization for the first iteration of the PVT computation, useful in some geometries */
     };
 
+    printf("rtkinit(&rtk, &rtklib_configuration_options)\n");
     rtkinit(&rtk, &rtklib_configuration_options);
 
     // Outputs

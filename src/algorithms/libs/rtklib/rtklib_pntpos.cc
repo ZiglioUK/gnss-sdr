@@ -149,7 +149,7 @@ double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
 
     if (sys == SYS_NONE)
         {
-            trace(4, "prange: satsys NULL\n");
+            printf( "prange: satsys NULL\n");
             return 0.0;
         }
 
@@ -172,7 +172,7 @@ double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
 
     if (lam[i] == 0.0 or lam[j] == 0.0)
         {
-            trace(4, "prange: NFREQ<2||lam[i]==0.0||lam[j]==0.0\n");
+            printf( "prange: NFREQ<2||lam[i]==0.0||lam[j]==0.0\n");
             printf("i: %d j:%d, lam[i]: %f lam[j] %f\n", i, j, lam[i], lam[j]);
             return 0.0;
         }
@@ -182,7 +182,7 @@ double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
         {
             if (testsnr(0, i, azel[1], obs->SNR[i] * 0.25, &opt->snrmask))
                 {
-                    trace(4, "snr mask: %s sat=%2d el=%.1f snr=%.1f\n",
+                    printf( "snr mask: %s sat=%2d el=%.1f snr=%.1f\n",
                         time_str(obs->time, 0), obs->sat, azel[1] * R2D, obs->SNR[i] * 0.25);
                     return 0.0;
                 }
@@ -190,7 +190,7 @@ double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
                 {
                     if (testsnr(0, j, azel[1], obs->SNR[j] * 0.25, &opt->snrmask))
                         {
-                            trace(4, "prange: testsnr error\n");
+                            printf( "prange: testsnr error\n");
                             return 0.0;
                         }
                 }
@@ -328,7 +328,7 @@ double prange(const obsd_t *obs, const nav_t *nav, const double *azel,
 int ionocorr(gtime_t time, const nav_t *nav, int sat, const double *pos,
     const double *azel, int ionoopt, double *ion, double *var)
 {
-    trace(4, "ionocorr: time=%s opt=%d sat=%2d pos=%.3f %.3f azel=%.3f %.3f\n",
+    printf( "ionocorr: time=%s opt=%d sat=%2d pos=%.3f %.3f azel=%.3f %.3f\n",
         time_str(time, 3), ionoopt, sat, pos[0] * R2D, pos[1] * R2D, azel[0] * R2D,
         azel[1] * R2D);
 
@@ -380,7 +380,7 @@ int ionocorr(gtime_t time, const nav_t *nav, int sat, const double *pos,
 int tropcorr(gtime_t time, const nav_t *nav __attribute__((unused)), const double *pos,
     const double *azel, int tropopt, double *trp, double *var)
 {
-    trace(4, "tropcorr: time=%s opt=%d pos=%.3f %.3f azel=%.3f %.3f\n",
+    printf( "tropcorr: time=%s opt=%d pos=%.3f %.3f azel=%.3f %.3f\n",
         time_str(time, 3), tropopt, pos[0] * R2D, pos[1] * R2D, azel[0] * R2D,
         azel[1] * R2D);
 
@@ -429,7 +429,7 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
     int sys;
     int mask[4] = {0};
 
-    trace(3, "resprng : n=%d\n", n);
+    printf( "resprng : n=%d\n", n);
 
     for (i = 0; i < 3; i++)
         {
@@ -452,7 +452,7 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             /* reject duplicated observation data */
             if (i < n - 1 && i < MAXOBS - 1 && obs[i].sat == obs[i + 1].sat)
                 {
-                    trace(2, "duplicated observation data %s sat=%2d\n",
+                    printf( "duplicated observation data %s sat=%2d\n",
                         time_str(obs[i].time, 3), obs[i].sat);
                     i++;
                     continue;
@@ -460,26 +460,26 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             /* geometric distance/azimuth/elevation angle */
             if ((r = geodist(rs + i * 6, rr, e)) <= 0.0)
                 {
-                    trace(4, "geodist error\n");
+                    printf( "geodist error = %d\n", r);
                     continue;
                 }
             double elaux = satazel(pos, e, azel + i * 2);
             if (elaux < opt->elmin)
                 {
-                    trace(4, "satazel error. el = %lf , elmin = %lf\n", elaux, opt->elmin);
+                    printf( "satazel error. el = %lf , elmin = %lf\n", elaux, opt->elmin);
                     continue;
                 }
             /* psudorange with code bias correction */
             if ((P = prange(obs + i, nav, azel + i * 2, iter, opt, &vmeas)) == 0.0)
                 {
-                    trace(4, "prange error\n");
+                    printf( "prange error\n");
                     continue;
                 }
 
             /* excluded satellite? */
             if (satexclude(obs[i].sat, svh[i], opt))
                 {
-                    trace(4, "satexclude error\n");
+                    printf( "satexclude error\n");
                     continue;
                 }
 
@@ -487,7 +487,7 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             if (!ionocorr(obs[i].time, nav, obs[i].sat, pos, azel + i * 2,
                     iter > 0 ? opt->ionoopt : IONOOPT_BRDC, &dion, &vion))
                 {
-                    trace(4, "ionocorr error\n");
+                    printf( "ionocorr error\n");
                     continue;
                 }
 
@@ -500,7 +500,7 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             if (!tropcorr(obs[i].time, nav, pos, azel + i * 2,
                     iter > 0 ? opt->tropopt : TROPOPT_SAAS, &dtrp, &vtrp))
                 {
-                    trace(4, "tropocorr error\n");
+                    printf( "tropocorr error\n");
                     continue;
                 }
             /* pseudorange residual */
@@ -543,7 +543,7 @@ int rescode(int iter, const obsd_t *obs, int n, const double *rs,
             /* error variance */
             var[nv++] = varerr(opt, azel[1 + i * 2], sys) + vare[i] + vmeas + vion + vtrp;
 
-            trace(4, "sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n", obs[i].sat,
+            printf( "sat=%2d azel=%5.1f %4.1f res=%7.3f sig=%5.3f\n", obs[i].sat,
                 azel[i * 2] * R2D, azel[1 + i * 2] * R2D, resp[i], sqrt(var[nv - 1]));
         }
     /* constraint to avoid rank-deficient */
@@ -575,7 +575,7 @@ int valsol(const double *azel, const int *vsat, int n,
     int i;
     int ns;
 
-    trace(3, "valsol  : n=%d nv=%d\n", n, nv);
+    printf( "valsol  : n=%d nv=%d\n", n, nv);
 
     /* chi-square validation of residuals */
     vv = dot(v, v, nv);
@@ -702,7 +702,7 @@ int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
     int ns;
     char msg_aux[128];
 
-    trace(3, "estpos  : n=%d\n", n);
+    printf( "estpos  : n=%d\n", n);
 
     v = mat(n + 4, 1);
     H = mat(NX, n + 4);
@@ -846,7 +846,7 @@ int raim_fde(const obsd_t *obs, int n, const double *rs,
     int *vsat_e;
     int sat = 0;
 
-    trace(3, "raim_fde: %s n=%2d\n", time_str(obs[0].time, 0), n);
+    printf( "raim_fde: %s n=%2d\n", time_str(obs[0].time, 0), n);
 
     if (!(obs_e = static_cast<obsd_t *>(malloc(sizeof(obsd_t) * n))))
         {
@@ -879,7 +879,7 @@ int raim_fde(const obsd_t *obs, int n, const double *rs,
             if (!estpos(obs_e, n - 1, rs_e, dts_e, vare_e, svh_e, nav, opt, &sol_e, azel_e,
                     vsat_e, resp_e, msg_e))
                 {
-                    trace(3, "raim_fde: exsat=%2d (%s)\n", obs[i].sat, msg);
+                    printf( "raim_fde: exsat=%2d (%s)\n", obs[i].sat, msg);
                     continue;
                 }
             for (j = nvsat = 0, rms_e = 0.0; j < n - 1; j++)
@@ -893,13 +893,13 @@ int raim_fde(const obsd_t *obs, int n, const double *rs,
                 }
             if (nvsat < 5)
                 {
-                    trace(3, "raim_fde: exsat=%2d lack of satellites nvsat=%2d\n",
+                    printf( "raim_fde: exsat=%2d lack of satellites nvsat=%2d\n",
                         obs[i].sat, nvsat);
                     continue;
                 }
             rms_e = sqrt(rms_e / nvsat);
 
-            trace(3, "raim_fde: exsat=%2d rms=%8.3f\n", obs[i].sat, rms_e);
+            printf( "raim_fde: exsat=%2d rms=%8.3f\n", obs[i].sat, rms_e);
 
             if (rms_e > rms)
                 {
@@ -928,7 +928,7 @@ int raim_fde(const obsd_t *obs, int n, const double *rs,
         {
             time2str(obs[0].time, tstr, 2);
             auto name = satno2id(sat);
-            trace(2, "%s: %s excluded by raim\n", tstr + 11, name.data());
+            printf( "%s: %s excluded by raim\n", tstr + 11, name.data());
         }
     free(obs_e);
     free(rs_e);
@@ -961,7 +961,7 @@ int resdop(const obsd_t *obs, int n, const double *rs, const double *dts,
     int nv = 0;
     int band = 0;
 
-    trace(3, "resdop  : n=%d\n", n);
+    printf( "resdop  : n=%d\n", n);
 
     ecef2pos(rr, pos);
     xyz2enu(pos, E);
@@ -1031,7 +1031,7 @@ void estvel(const obsd_t *obs, int n, const double *rs, const double *dts,
     int j;
     int nv;
 
-    trace(3, "estvel  : n=%d\n", n);
+    printf( "estvel  : n=%d\n", n);
 
     v = mat(n, 1);
     H = mat(4, n);
@@ -1104,11 +1104,13 @@ int pntpos(const obsd_t *obs, int n, const nav_t *nav,
 
     if (n <= 0)
         {
+    		printf( "pntpos  : no observation data\n" );
+
             std::strncpy(msg, "no observation data", 20);
             return 0;
         }
 
-    trace(3, "pntpos  : tobs=%s n=%d\n", time_str(obs[0].time, 3), n);
+    printf( "pntpos  : tobs=%s n=%d\n", time_str(obs[0].time, 3), n);
 
     sol->time = obs[0].time;
     msg[0] = '\0';

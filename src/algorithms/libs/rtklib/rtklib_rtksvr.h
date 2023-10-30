@@ -48,7 +48,7 @@ const solopt_t SOLOPT_DEFAULT = {
 
 const prcopt_t PRCOPT_DEFAULT = {            /* defaults processing options */
     PMODE_SINGLE, 0, 2, SYS_GPS,             /* mode, soltype, nf, navsys */
-    15.0 * D2R, {{}, {{}, {}}},              /* elmin, snrmask */
+    ((-100) * D2R), {{}, {{}, {}}},              /* elmin, snrmask */
     0, 1, 1, 1,                              /* sateph, modear, glomodear, bdsmodear */
     5, 0, 10, 1,                             /* maxout, minlock, minfix, armaxiter */
     0, 0, 0, 0,                              /* estion, esttrop, dynamics, tidecorr */

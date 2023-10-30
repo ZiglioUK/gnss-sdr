@@ -1960,7 +1960,7 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                 }
         }
     // ************ end time tags **************
-    std::cout << "" << std::endl;
+    //std::cout << "" << std::endl;
 
     for (int32_t epoch = 0; epoch < noutput_items; epoch++)
         {
@@ -1975,14 +1975,12 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
 
             d_gnss_observables_map.clear();
             const auto** in = reinterpret_cast<const Gnss_Synchro**>(&input_items[0]);  // Get the input buffer pointer
-
             // ############ 1. READ PSEUDORANGES ####
             for (uint32_t i = 0; i < d_nchannels; i++)
                 {
-
                     if (in[i][epoch].Flag_valid_pseudorange)
                         {
-                    	    const auto tmp_eph_iter_gps = d_internal_pvt_solver->gps_ephemeris_map.find(in[i][epoch].PRN);
+                            const auto tmp_eph_iter_gps = d_internal_pvt_solver->gps_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_gal = d_internal_pvt_solver->galileo_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_cnav = d_internal_pvt_solver->gps_cnav_ephemeris_map.find(in[i][epoch].PRN);
                             const auto tmp_eph_iter_glo_gnav = d_internal_pvt_solver->glonass_gnav_ephemeris_map.find(in[i][epoch].PRN);
@@ -1996,12 +1994,12 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
 
                                     if ((prn_aux == in[i][epoch].PRN) && (std::string(in[i][epoch].Signal, 2) == std::string("1C")) && (d_use_unhealthy_sats || (tmp_eph_iter_gps->second.SV_health == 0)))
                                         {
-                                    		std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Valid\n";
+                                    		//std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Valid\n";
                                             store_valid_observable = true;
                                         }
                                     else
 										{
-											std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Health = "  << tmp_eph_iter_gps->second.SV_health << "\n";
+											//std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Health = "  << tmp_eph_iter_gps->second.SV_health << "\n";
 										}
                                 }
 //                            else {
@@ -2103,7 +2101,7 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                         {
                             d_channel_initialized.at(i) = false;  // the current channel is not reporting valid observable
 
-                    		std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Invalid\n";
+                    		//std::cout << "Ch " << i << " PRN "<< in[i][epoch].PRN << " Invalid\n";
                         }
                 }
 
@@ -2116,7 +2114,7 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
             // ############ 2 COMPUTE THE PVT ################################
 
             bool flag_pvt_valid = false;
-            if (d_gnss_observables_map.empty() == false)
+            if (d_gnss_observables_map.empty() == false && d_gnss_observables_map.size()>3)
                 {
             		std::cout << "COMPUTE PVT: obs size = " << d_gnss_observables_map.size() << "\n";
                     //LOG(INFO) << "diff raw obs time: " << d_gnss_observables_map.cbegin()->second.RX_time * 1000.0 - old_time_debug;
@@ -2239,7 +2237,8 @@ int rtklib_pvt_gs::work(int noutput_items, gr_vector_const_void_star& input_item
                                     LOG(INFO) << "PVT: Number of consecutive position solver error reached, Sent reset to observables.";
                                     d_pvt_errors_counter = 0;
                                 }
-                            //exit(1);
+                            std::cout << "d_pvt_errors_counter = "<< d_pvt_errors_counter << "\n";
+                            exit(1);
                         }
 
                     // compute on the fly PVT solution
