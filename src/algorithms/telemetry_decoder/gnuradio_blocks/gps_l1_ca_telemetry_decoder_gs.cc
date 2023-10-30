@@ -349,6 +349,9 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
                     d_nav_msg_packet.nav_message = subframe_bits.to_string();
                 }
             const int32_t subframe_ID = d_nav.subframe_decoder(subframe.data());  // decode the subframe
+
+            std::shared_ptr<Gps_Ephemeris> eph;
+
             if (subframe_ID > 0 && subframe_ID < 6)
                 {
                     switch (subframe_ID)
@@ -368,6 +371,9 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
                                     // get ephemeris object for this SV (mandatory)
                                     const std::shared_ptr<Gps_Ephemeris> tmp_obj = std::make_shared<Gps_Ephemeris>(d_nav.get_ephemeris());
                                     this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
+
+                                	std::cout << "code_on_L2l " << d_nav.get_ephemeris().code_on_L2 << "\n";
+                                	std::cout << "SV_health " << d_nav.get_ephemeris().SV_health << "\n";
                                 }
 
                             break;
@@ -377,6 +383,9 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
                                     // get ephemeris object for this SV (mandatory)
                                     const std::shared_ptr<Gps_Ephemeris> tmp_obj = std::make_shared<Gps_Ephemeris>(d_nav.get_ephemeris());
                                     this->message_port_pub(pmt::mp("telemetry"), pmt::make_any(tmp_obj));
+
+                                	std::cout << "code_on_L2l " << d_nav.get_ephemeris().code_on_L2 << "\n";
+                                	std::cout << "SV_health " << d_nav.get_ephemeris().SV_health << "\n";
                                 }
                             break;
                         case 4:  // Possible IONOSPHERE and UTC model update (page 18)
@@ -398,12 +407,19 @@ bool gps_l1_ca_telemetry_decoder_gs::decode_subframe(double cn0, bool flag_inver
                             break;
                         }
                     const auto default_precision{std::cout.precision()};
+
+//					std::cout << "d_nav.satellite_validation() " << d_nav.satellite_validation() << "\n";
+
                     std::cout << "New GPS NAV message received in channel " << this->d_channel << ": "
                               << "subframe "
                               << subframe_ID << " from satellite "
                               << Gnss_Satellite(std::string("GPS"), d_nav.get_satellite_PRN())
                               << " with CN0=" << std::setprecision(2) << cn0 << std::setprecision(default_precision)
                               << " dB-Hz" << std::endl;
+
+//                    if( subframe_ID == 3 )
+//						exit(1);
+
                     return true;
                 }
         }
