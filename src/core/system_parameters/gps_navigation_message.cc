@@ -511,27 +511,30 @@ bool Gps_Navigation_Message::satellite_validation()
     bool flag_data_valid = false;
     b_valid_ephemeris_set_flag = false;
 
-    std::cout << "d_TOW_SF1 = " << d_TOW_SF1  << "\n";
-    std::cout << "d_TOW_SF2 = " << d_TOW_SF2  << "\n";
-    std::cout << "d_TOW_SF3 = " << d_TOW_SF3  << "\n";
-    std::cout << "d_TOW_SF4 = " << d_TOW_SF4  << "\n";
-
     // First Step:
     // check Issue Of Ephemeris Data (IODE IODC..) to find a possible interrupted reception
     // and check if the data have been filled (!=0)
    // if (d_TOW_SF1 != 0.0 || d_TOW_SF2 != 0.0 || d_TOW_SF3 != 0.0)
     if (d_TOW_SF1 != 0.0 and d_TOW_SF2 != 0.0 and d_TOW_SF3 != 0.0)
         {
-			std::cout << "d_IODE_SF2 = " << d_IODE_SF2  << "\n";
-			std::cout << "d_IODE_SF3 = " << d_IODE_SF3  << "\n";
-			std::cout << "d_IODC = " << d_IODC  << "\n";
-
-            if (d_IODE_SF2 == d_IODE_SF3 && d_IODC == d_IODE_SF2 && d_IODC != -1.0)
-                {
+//          if (d_IODE_SF2 == d_IODE_SF3 && d_IODC == d_IODE_SF2 && d_IODC != -1.0)
+            if (d_IODE_SF2 == d_IODE_SF3 and (d_IODC & 0xFF) == d_IODE_SF2 and d_IODE_SF2 != -1.0)                {
                     flag_data_valid = true;
                     b_valid_ephemeris_set_flag = true;
                 }
         }
 	std::cout << "b_valid_ephemeris_set_flag = " << b_valid_ephemeris_set_flag  << "\n";
+
+	if( !b_valid_ephemeris_set_flag ){
+	    std::cout << "d_TOW_SF1 = " << d_TOW_SF1  << "\n";
+	    std::cout << "d_TOW_SF2 = " << d_TOW_SF2  << "\n";
+	    std::cout << "d_TOW_SF3 = " << d_TOW_SF3  << "\n";
+	    std::cout << "d_TOW_SF4 = " << d_TOW_SF4  << "\n";
+
+		std::cout << "d_IODE_SF2 = " << d_IODE_SF2  << "\n";
+		std::cout << "d_IODE_SF3 = " << d_IODE_SF3  << "\n";
+		std::cout << "d_IODC = " << d_IODC  << "\n";
+	}
+
     return flag_data_valid;
 }
