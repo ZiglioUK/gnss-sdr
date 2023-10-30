@@ -2,7 +2,7 @@
 <!DOCTYPE boost_serialization>
 <boost_serialization signature="serialization::archive" version="18">
 <GNSS-SDR_ephemeris_map class_id="0" tracking_level="0" version="0">
-	<count>3</count>
+	<count>5</count>
 	<item_version>0</item_version>
 	<item class_id="1" tracking_level="0" version="0">
 		<first>3</first>
@@ -24,22 +24,67 @@
 			<Cic>1.86264514923095703e-09</Cic>
 			<Cis>5.40167093276977539e-08</Cis>
 			<toe>288000</toe>
-			<toc>288000</toc>
-			<af0>-1.25303398817777634e-04</af0>
-			<af1>2.10320649784989623e-11</af1>
+			<toc>0</toc>
+			<af0>0.00000000000000000e+00</af0>
+			<af1>0.00000000000000000e+00</af1>
 			<af2>0.00000000000000000e+00</af2>
-			<WN>232</WN>
+			<WN>0</WN>
 			<tow>291648</tow>
 			<satClkDrift>0.00000000000000000e+00</satClkDrift>
 			<dtr>0.00000000000000000e+00</dtr>
 			<IODE_SF2>77</IODE_SF2>
 			<IODE_SF3>77</IODE_SF3>
-			<code_on_L2>1</code_on_L2>
+			<code_on_L2>0</code_on_L2>
 			<L2_P_data_flag>0</L2_P_data_flag>
 			<SV_accuracy>0</SV_accuracy>
 			<SV_health>0</SV_health>
-			<TGD>1.39698386192321777e-09</TGD>
-			<IODC>77</IODC>
+			<TGD>0.00000000000000000e+00</TGD>
+			<IODC>0</IODC>
+			<AODO>15300</AODO>
+			<fit_interval_flag>0</fit_interval_flag>
+			<spare1>0.00000000000000000e+00</spare1>
+			<spare2>0.00000000000000000e+00</spare2>
+			<integrity_status_flag>0</integrity_status_flag>
+			<alert_flag>0</alert_flag>
+			<antispoofing_flag>0</antispoofing_flag>
+		</second>
+	</item>
+	<item>
+		<first>4</first>
+		<second>
+			<PRN>4</PRN>
+			<M_0>2.64693065994937493e+00</M_0>
+			<delta_n>4.67626621382932624e-09</delta_n>
+			<ecc>2.56538460962474303e-03</ecc>
+			<sqrtA>5.15361677932739258e+03</sqrtA>
+			<OMEGA_0>2.37617944186865770e+00</OMEGA_0>
+			<i_0>9.63398249632658632e-01</i_0>
+			<omega>-3.04807776293638133e+00</omega>
+			<OMEGAdot>-8.07497921243926067e-09</OMEGAdot>
+			<idot>-4.60733477112948209e-11</idot>
+			<Cuc>-9.85339283943176270e-07</Cuc>
+			<Cus>6.01634383201599121e-06</Cus>
+			<Crc>2.66218750000000000e+02</Crc>
+			<Crs>-1.79687500000000000e+01</Crs>
+			<Cic>-5.77419996261596680e-08</Cic>
+			<Cis>-5.58793544769287109e-09</Cis>
+			<toe>288000</toe>
+			<toc>0</toc>
+			<af0>0.00000000000000000e+00</af0>
+			<af1>0.00000000000000000e+00</af1>
+			<af2>0.00000000000000000e+00</af2>
+			<WN>0</WN>
+			<tow>291648</tow>
+			<satClkDrift>0.00000000000000000e+00</satClkDrift>
+			<dtr>0.00000000000000000e+00</dtr>
+			<IODE_SF2>194</IODE_SF2>
+			<IODE_SF3>194</IODE_SF3>
+			<code_on_L2>0</code_on_L2>
+			<L2_P_data_flag>0</L2_P_data_flag>
+			<SV_accuracy>0</SV_accuracy>
+			<SV_health>0</SV_health>
+			<TGD>0.00000000000000000e+00</TGD>
+			<IODC>0</IODC>
 			<AODO>15300</AODO>
 			<fit_interval_flag>0</fit_interval_flag>
 			<spare1>0.00000000000000000e+00</spare1>
@@ -85,6 +130,51 @@
 			<SV_health>0</SV_health>
 			<TGD>5.12227416038513184e-09</TGD>
 			<IODC>37</IODC>
+			<AODO>15300</AODO>
+			<fit_interval_flag>0</fit_interval_flag>
+			<spare1>0.00000000000000000e+00</spare1>
+			<spare2>0.00000000000000000e+00</spare2>
+			<integrity_status_flag>0</integrity_status_flag>
+			<alert_flag>0</alert_flag>
+			<antispoofing_flag>0</antispoofing_flag>
+		</second>
+	</item>
+	<item>
+		<first>14</first>
+		<second>
+			<PRN>14</PRN>
+			<M_0>-1.09358163252167129e-01</M_0>
+			<delta_n>4.75948396589701365e-09</delta_n>
+			<ecc>3.56182502582669215e-03</ecc>
+			<sqrtA>5.15368094825744629e+03</sqrtA>
+			<OMEGA_0>-1.81846632415869691e+00</OMEGA_0>
+			<i_0>9.47535407578757982e-01</i_0>
+			<omega>-2.94099728121022075e+00</omega>
+			<OMEGAdot>-8.24355766297981180e-09</OMEGAdot>
+			<idot>2.18580533328003350e-10</idot>
+			<Cuc>4.84660267829895020e-06</Cuc>
+			<Cus>7.53626227378845215e-06</Cus>
+			<Crc>2.27250000000000000e+02</Crc>
+			<Crs>9.08125000000000000e+01</Crs>
+			<Cic>5.40167093276977539e-08</Cic>
+			<Cis>9.31322574615478516e-09</Cis>
+			<toe>291584</toe>
+			<toc>291584</toc>
+			<af0>1.90346501767635345e-04</af0>
+			<af1>1.11413100967183677e-11</af1>
+			<af2>0.00000000000000000e+00</af2>
+			<WN>232</WN>
+			<tow>291648</tow>
+			<satClkDrift>0.00000000000000000e+00</satClkDrift>
+			<dtr>0.00000000000000000e+00</dtr>
+			<IODE_SF2>239</IODE_SF2>
+			<IODE_SF3>239</IODE_SF3>
+			<code_on_L2>1</code_on_L2>
+			<L2_P_data_flag>0</L2_P_data_flag>
+			<SV_accuracy>0</SV_accuracy>
+			<SV_health>0</SV_health>
+			<TGD>-7.45058059692382812e-09</TGD>
+			<IODC>1007</IODC>
 			<AODO>15300</AODO>
 			<fit_interval_flag>0</fit_interval_flag>
 			<spare1>0.00000000000000000e+00</spare1>
