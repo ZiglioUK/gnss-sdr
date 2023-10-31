@@ -33,23 +33,11 @@ options:
     state: enabled
 
 blocks:
-- name: FAC_sz
-  id: variable
-  parameters:
-    comment: ''
-    value: int(samp_rate/decimate)
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [432, 20.0]
-    rotation: 0
-    state: enabled
 - name: decimate
   id: variable
   parameters:
     comment: ''
-    value: '250'
+    value: '125'
   states:
     bus_sink: false
     bus_source: false
@@ -163,13 +151,26 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     type: fir_filter_ccf
-    width: samp_rate/(decimate)
+    width: samp_rate/(20*decimate)
     win: window.WIN_BLACKMAN
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [736, 148.0]
+    rotation: 0
+    state: true
+- name: note_0
+  id: note
+  parameters:
+    alias: ''
+    comment: ''
+    note: double freq here
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [976, 100.0]
     rotation: 0
     state: true
 - name: qtgui_freq_sink_x_0
